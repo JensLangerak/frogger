@@ -50,6 +50,7 @@ public abstract class Entity {
         return distanceX < hitDistanceX && distanceY < hitDistanceY;
     }
 
+    public void Thick(long nanoTime){};
 
     public abstract void CheckBoundary(double width, double height);
 }

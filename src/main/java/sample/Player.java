@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 public class Player extends Entity {
     public Player(Point2D position)
     {
-        super(position, Game.TileSize,  Game.TileSize);
+        super(position, Game.TileSize * 0.9,  Game.TileSize * 0.9);
     }
 
     double speed =  Game.TileSize;
