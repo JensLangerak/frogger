@@ -9,15 +9,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
-import java.sql.Time;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import static javafx.scene.input.KeyCode.K;
-import static javafx.scene.input.KeyCode.M;
-import static javafx.scene.input.KeyCode.P;
 
 public class Game {
     public static final double TileSize = 30;
@@ -30,6 +25,7 @@ public class Game {
     private Map<KeyCode, KeyEvent> pressedKeys;
 
     private List<Lane> lanes;
+    private List<Target> targets;
 
     public Game(GraphicsContext context, double width, double height)
     {
@@ -38,15 +34,16 @@ public class Game {
         this.height = height;
         pressedKeys = new HashMap<KeyCode, KeyEvent>();
         lanes = new LinkedList<>();
-        Restart();
+        targets = new LinkedList<>();
+        restart();
     }
 
-    public void Restart() {
+    public void restart() {
         startTimeNanoSeconds = System.nanoTime();
         player = new Player(new Point2D(width / 2,height - 1 * TileSize));
         lanes.clear();
         createLanes();
-
+        targets.add(new Target(new Point2D(width / 2,height - 18 * TileSize)));
         gameOver = false;
     }
 
@@ -60,22 +57,32 @@ public class Game {
     }
 
     boolean gameOver = false;
-    public void Thick(long nanoTime)
+    public void thick(long nanoTime)
     {
         if (gameOver) {
             if (pressedKeys.containsKey(KeyCode.SPACE))
-                Restart();
+                restart();
             return;
         };
 
         context.clearRect(0,0,width,height);
-        ProcessKeyEvents();
-        player.CheckBoundary(width, height);
-        lanes.forEach(lane -> lane.MoveCars(nanoTime));
-        lanes.forEach(lane ->lane.CheckOutOfBoundaries(width,height ));
-        lanes.forEach(lane ->lane.Spawn(nanoTime));
+        processKeyEvents();
+        player.checkBoundary(width, height);
+        if (targets.stream().anyMatch(target -> target.collision(player))) {
+            context.setTextAlign(TextAlignment.CENTER);
+            context.setTextBaseline(VPos.CENTER);
+            context.setFill(Color.YELLOW);
+            context.setFont(new Font(80));
+            context.fillText("YOU WON!", width / 2, height /2);
+            gameOver = true;
+            return;
+        }
 
-        if ( lanes.stream().anyMatch(lane -> lane.CheckCollision(player))) {
+        lanes.forEach(lane -> lane.moveCars(nanoTime));
+        lanes.forEach(lane ->lane.checkOutOfBoundaries(width,height ));
+        lanes.forEach(lane ->lane.spawn(nanoTime));
+
+        if ( lanes.stream().anyMatch(lane -> lane.checkCollision(player))) {
             context.setTextAlign(TextAlignment.CENTER);
             context.setTextBaseline(VPos.CENTER);
             context.setFill(Color.RED);
@@ -84,36 +91,37 @@ public class Game {
             gameOver = true;
             return;
         }
-        player.Draw(context);
-        lanes.forEach(lane ->lane.Draw(context));
+        player.draw(context);
+        lanes.forEach(lane ->lane.draw(context));
+        targets.forEach(target -> target.draw(context));
 
     }
 
-    public void KeyPressed(KeyEvent event){
+    public void keyPressed(KeyEvent event){
         pressedKeys.put(event.getCode(), event);
     }
 
-    public void KeyReleased(KeyEvent event){
+    public void keyReleased(KeyEvent event){
         pressedKeys.remove(event.getCode());
     }
 
-    private void ProcessKeyEvents() {
+    private void processKeyEvents() {
         for (KeyEvent event: pressedKeys.values()) {
             switch (event.getCode()) {
                 case UP:
-                    player.Move(Player.Direction.UP);
+                    player.move(Player.Direction.UP);
                     break;
                 case DOWN:
-                    player.Move(Player.Direction.DOWN);
+                    player.move(Player.Direction.DOWN);
                     break;
                 case LEFT:
-                    player.Move(Player.Direction.LEFT);
+                    player.move(Player.Direction.LEFT);
                     break;
                 case RIGHT:
-                    player.Move(Player.Direction.RIGHT);
+                    player.move(Player.Direction.RIGHT);
                     break;
                 case SPACE:
-                    Restart();
+                    restart();
                     break;
             }
             

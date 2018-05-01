@@ -31,16 +31,16 @@ public abstract class Entity {
     }
 
     /**
-     * Draw the object onto the context
+     * draw the object onto the context
      */
-    abstract void Draw(GraphicsContext context);
+    abstract void draw(GraphicsContext context);
 
     /**
      * Check if two entities collide.
      * @param other
      * @return true if this collides with other.
      */
-    public boolean Collision(Entity other) {
+    public boolean collision(Entity other) {
         double distanceX = Math.abs(this.getCenterPosition().getX() - other.getCenterPosition().getX());
         double distanceY = Math.abs(this.getCenterPosition().getY() - other.getCenterPosition().getY());
 
@@ -50,8 +50,8 @@ public abstract class Entity {
         return distanceX < hitDistanceX && distanceY < hitDistanceY;
     }
 
-    public void Thick(long nanoTime){};
+    public void thick(long nanoTime){};
 
-    public abstract void CheckBoundary(double width, double height);
+    public abstract void checkBoundary(double width, double height);
 }
 

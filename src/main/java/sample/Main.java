@@ -3,9 +3,7 @@ package sample;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -13,8 +11,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
-import java.net.URL;
 
 public class Main extends Application {
 
@@ -42,7 +38,7 @@ public class Main extends Application {
                 {
                     public void handle(KeyEvent e)
                     {
-                        game.KeyPressed(e);
+                        game.keyPressed(e);
                     }
                 });
 
@@ -51,7 +47,7 @@ public class Main extends Application {
                 {
                     public void handle(KeyEvent e)
                     {
-                        game.KeyReleased(e);
+                        game.keyReleased(e);
                     }
                 });
 
@@ -59,7 +55,7 @@ public class Main extends Application {
         {
             public void handle(long currentNanoTime)
             {
-                game.Thick(currentNanoTime);
+                game.thick(currentNanoTime);
             }
         }.start();
 

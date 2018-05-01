@@ -5,8 +5,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 
 public class Lane {
 
@@ -24,7 +22,7 @@ public class Lane {
         cars = new LinkedList<>();
     }
 
-    public void Spawn(long time) {
+    public void spawn(long time) {
         if (!cars.isEmpty()) {
             double xRef = cars.getLast().getCenterPosition().getX();
             double outerPoint = cars.getLast().getWidth() / 2 + 0.25 * Game.TileSize;
@@ -44,22 +42,22 @@ public class Lane {
         }
     }
 
-    public void MoveCars(long time)
+    public void moveCars(long time)
     {
-        cars.forEach(car -> car.Thick(time));
+        cars.forEach(car -> car.thick(time));
     }
 
-    public void CheckOutOfBoundaries(double width, double height)
+    public void checkOutOfBoundaries(double width, double height)
     {
-        cars.removeIf(car -> car.OutOfBounds(width, height , true));
+        cars.removeIf(car -> car.outOfBounds(width, height , true));
     }
 
-    public boolean CheckCollision(Entity entity)
+    public boolean checkCollision(Entity entity)
     {
-        return cars.stream().anyMatch(car -> car.Collision(entity));
+        return cars.stream().anyMatch(car -> car.collision(entity));
     }
 
-    public void Draw(GraphicsContext context) {
-        cars.forEach(car -> car.Draw(context));
+    public void draw(GraphicsContext context) {
+        cars.forEach(car -> car.draw(context));
     }
 }

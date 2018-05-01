@@ -15,7 +15,7 @@ public class Car extends Entity {
 
     private double speed;
 
-    void Draw(GraphicsContext context) {
+    void draw(GraphicsContext context) {
         double x = getCenterPosition().getX() - getWidth() / 2;
         double y = getCenterPosition().getY() - getHeight() / 2;
 
@@ -24,11 +24,11 @@ public class Car extends Entity {
     }
 
     @Override
-    public void Thick(long nanoTime){
+    public void thick(long nanoTime){
         Move(speed, 0);
     }
 
-    public void CheckBoundary(double width, double height) {
+    public void checkBoundary(double width, double height) {
 
         double left = getCenterPosition().getX() - getWidth() / 2;
         double right = getCenterPosition().getX() + getWidth() / 2;
@@ -38,7 +38,7 @@ public class Car extends Entity {
 
     }
 
-    public boolean OutOfBounds(double width, double height, boolean useDirection) {
+    public boolean outOfBounds(double width, double height, boolean useDirection) {
         double left = getCenterPosition().getX() - getWidth() / 2;
         double right = getCenterPosition().getX() + getWidth() / 2;
         if (!useDirection)
