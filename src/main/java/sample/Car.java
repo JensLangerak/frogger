@@ -47,4 +47,8 @@ public class Car extends Entity {
             return (speed < 0) ? right < 0 : left > width;
     }
 
+    public double getSpeed() {
+        return speed;
+    }
 }
+

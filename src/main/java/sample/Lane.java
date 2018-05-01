@@ -5,6 +5,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Lane {
 
@@ -12,14 +14,21 @@ public class Lane {
     private double speed;
     private LinkedList<Car> cars;
 
-    private int maxLength = 3;
-    private int minLength = 1;
+    private double maxLength;
+    private double minLength;
+    private CarBuilder builder;
+    private double spawnChance;
 
-    public Lane(Point2D spawn, double speed)
+    public Lane(Point2D spawn, double speed, CarBuilder builder, double maxLength, double minLength, double spawnChance)
     {
         this.spawnPoint = spawn;
         this.speed = speed;
         cars = new LinkedList<>();
+        this.builder = builder;
+
+        this.maxLength = maxLength;
+        this.minLength = minLength;
+        this.spawnChance = spawnChance;
     }
 
     public void spawn(long time) {
@@ -33,12 +42,12 @@ public class Lane {
                 return;
         }
 
-        if (Math.random() < 0.013) {
+        if (Math.random() < spawnChance) {
             double dx = speed > 0 ? -maxLength : maxLength;
             dx *= Game.TileSize;
             double r = Math.random();
 
-            cars.add(new Car(new Point2D(spawnPoint.getX() + dx, spawnPoint.getY()), (r * maxLength + (1 - r) * minLength) * Game.TileSize, speed));
+            cars.add(builder.build(new Point2D(spawnPoint.getX() + dx, spawnPoint.getY()), (r * maxLength + (1 - r) * minLength) * Game.TileSize, speed));
         }
     }
 
@@ -55,6 +64,11 @@ public class Lane {
     public boolean checkCollision(Entity entity)
     {
         return cars.stream().anyMatch(car -> car.collision(entity));
+    }
+
+    public List<Car> getCollisions(Entity entity)
+    {
+        return cars.stream().filter(car -> car.collision(entity)).collect(Collectors.toList());
     }
 
     public void draw(GraphicsContext context) {
