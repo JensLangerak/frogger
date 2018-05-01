@@ -6,9 +6,11 @@ import javafx.scene.paint.Color;
 
 public class Car extends Entity {
 
+    private Color color;
     public Car(Point2D position, double length, double speed) {
         super(position, length, Game.TileSize * 0.9);
         this.speed = speed;
+        color = Color.color(Math.random(), Math.random(), Math.random());
     }
 
     private double speed;
@@ -17,7 +19,7 @@ public class Car extends Entity {
         double x = getCenterPosition().getX() - getWidth() / 2;
         double y = getCenterPosition().getY() - getHeight() / 2;
 
-        context.setFill(Color.YELLOW);
+        context.setFill(color);
         context.fillRect(x, y, getWidth(), getHeight());
     }
 
@@ -27,11 +29,22 @@ public class Car extends Entity {
     }
 
     public void CheckBoundary(double width, double height) {
+
         double left = getCenterPosition().getX() - getWidth() / 2;
         double right = getCenterPosition().getX() + getWidth() / 2;
 
-        if (left < 0 || right > width)
-            speed = speed * -1;
+        //if (left < 0 || right > width)
+        //    speed = speed * -1;
 
     }
+
+    public boolean OutOfBounds(double width, double height, boolean useDirection) {
+        double left = getCenterPosition().getX() - getWidth() / 2;
+        double right = getCenterPosition().getX() + getWidth() / 2;
+        if (!useDirection)
+            return left > width || right < 0;
+        else
+            return (speed < 0) ? right < 0 : left > width;
+    }
+
 }

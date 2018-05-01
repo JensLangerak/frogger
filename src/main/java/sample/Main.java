@@ -26,7 +26,7 @@ public class Main extends Application {
         Scene scene = new Scene( root );
         primaryStage.setScene( scene );
 
-        double w = 400;
+        double w = 800;
         double h = 600;
         Canvas canvas = new Canvas( w, h );
         StackPane canvasContainer = new StackPane(canvas);

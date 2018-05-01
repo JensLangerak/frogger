@@ -11,12 +11,16 @@ import javafx.scene.text.TextAlignment;
 
 import java.sql.Time;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import static javafx.scene.input.KeyCode.K;
 import static javafx.scene.input.KeyCode.M;
+import static javafx.scene.input.KeyCode.P;
 
 public class Game {
-    public static final double TileSize = 20;
+    public static final double TileSize = 30;
 
     private Player player;
     private GraphicsContext context;
@@ -25,31 +29,53 @@ public class Game {
     private double height;
     private Map<KeyCode, KeyEvent> pressedKeys;
 
-    private Car test;
+    private List<Lane> lanes;
 
     public Game(GraphicsContext context, double width, double height)
     {
-        startTimeNanoSeconds = System.nanoTime();
-        player = new Player(new Point2D(width / 2,height - 1 * TileSize));
         this.context = context;
         this.width = width;
         this.height = height;
         pressedKeys = new HashMap<KeyCode, KeyEvent>();
-
-        test = new Car(new Point2D(width / 2, height - 10 * TileSize), 40, 5);
+        lanes = new LinkedList<>();
+        Restart();
     }
+
+    public void Restart() {
+        startTimeNanoSeconds = System.nanoTime();
+        player = new Player(new Point2D(width / 2,height - 1 * TileSize));
+        lanes.clear();
+        createLanes();
+
+        gameOver = false;
+    }
+
+    private void createLanes() {
+        double speed = 4;
+        for (int i = 0; i < 6; i++) {
+            double x = speed > 0 ? 0 : width;
+            lanes.add(new Lane(new Point2D(x, height - (i + 3) * TileSize), speed));
+            speed *= -1;
+        }
+    }
+
     boolean gameOver = false;
     public void Thick(long nanoTime)
     {
-        if (gameOver) return;
+        if (gameOver) {
+            if (pressedKeys.containsKey(KeyCode.SPACE))
+                Restart();
+            return;
+        };
 
         context.clearRect(0,0,width,height);
         ProcessKeyEvents();
         player.CheckBoundary(width, height);
-        test.Thick(nanoTime);
-        test.CheckBoundary(width, height);
+        lanes.forEach(lane -> lane.MoveCars(nanoTime));
+        lanes.forEach(lane ->lane.CheckOutOfBoundaries(width,height ));
+        lanes.forEach(lane ->lane.Spawn(nanoTime));
 
-        if (player.Collision(test)) {
+        if ( lanes.stream().anyMatch(lane -> lane.CheckCollision(player))) {
             context.setTextAlign(TextAlignment.CENTER);
             context.setTextBaseline(VPos.CENTER);
             context.setFill(Color.RED);
@@ -59,7 +85,7 @@ public class Game {
             return;
         }
         player.Draw(context);
-        test.Draw(context);
+        lanes.forEach(lane ->lane.Draw(context));
 
     }
 
@@ -85,6 +111,9 @@ public class Game {
                     break;
                 case RIGHT:
                     player.Move(Player.Direction.RIGHT);
+                    break;
+                case SPACE:
+                    Restart();
                     break;
             }
             
